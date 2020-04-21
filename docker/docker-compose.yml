@@ -1,0 +1,69 @@
+#create a network and add our services into this network:
+version: "3.7"
+
+networks:
+  codex-network:
+
+services:
+
+  config-server:
+    build:
+      context: ../../codex-config
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.1.0
+    image: config
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    expose:
+      - "8081"
+    ports:
+      - "8081:8888"
+    networks:
+      - codex-network
+    volumes:
+      - ${HOME}/codex/codex-config:/home/spring/codex-config
+    command: java -jar codex/build/libs/codex-config-0.1.0.jar
+
+  catalog-server:
+    build:
+      context: ../../codex-catalog
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.0.1-SNAPSHOT
+    image: catalog
+    depends_on:
+      - config-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6666
+    ports:
+      - "8082:8889"
+      - "6666:6666"
+    networks:
+      - codex-network
+    entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
+    command: java -jar catalog/build/libs/codex-catalog-${APP_VERSION}.jar
+
+  security-server:
+    build:
+      context: ../../codex-security
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.0.1-SNAPSHOT
+    image: security
+    depends_on:
+      - config-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
+    ports:
+      - "8083:8890"
+      - "6667:6667"
+    networks:
+      - codex-network
+    entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
+    command: java -jar security/build/libs/codex-security-${APP_VERSION}.jar
+
