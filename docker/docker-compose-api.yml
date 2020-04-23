@@ -1,0 +1,41 @@
+#create a network and add our services into this network:
+version: "3.7"
+
+services:
+
+  catalog-server:
+    build:
+      context: ../../codex-catalog
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.0.1-SNAPSHOT
+    image: catalog
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6666
+    ports:
+      - "8082:8889"
+      - "6666:6666"
+    entrypoint: ["sh", "-c", "./wait-for-it.sh localhost:8081 -t 25 && ./run.sh"]
+    command: java -jar catalog/build/libs/codex-catalog-${APP_VERSION}.jar
+    network_mode: host
+
+  security-server:
+    build:
+      context: ../../codex-security
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.0.1-SNAPSHOT
+    image: security
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
+    ports:
+      - "8083:8890"
+      - "6667:6667"
+    entrypoint: ["sh", "-c", "./wait-for-it.sh localhost:8081 -t 25 && ./run.sh"]
+    command: java -jar security/build/libs/codex-security-${APP_VERSION}.jar
+    network_mode: host
+

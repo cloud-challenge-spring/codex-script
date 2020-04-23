@@ -1,0 +1,33 @@
+#create a network and add our services into this network:
+version: "3.7"
+
+services:
+
+  config-server:
+    build:
+      context: ../../codex-config
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.1.0
+    image: config
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    ports:
+      - "8081:8888"
+    volumes:
+      - ${HOME}/codex/codex-config:/home/spring/codex-config
+    command: java -jar codex/build/libs/codex-config-0.1.0.jar
+
+  eureka-server:
+    build:
+      context: ../../codex-eureka
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.0.1
+    image: eureka
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    ports:
+      - "8080:8887"
+    entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
+    command: java -jar codex/build/libs/codex-eureka-0.1.0.jar
