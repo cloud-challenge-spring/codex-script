@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-api.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: security-server
+  name: security-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: security-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-api.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: security-server
+    spec:
+      containers:
+      - args:
+        - java
+        - -jar
+        - security/build/libs/codex-security-.jar
+        command:
+        - sh
+        - -c
+        - ./wait-for-it.sh config-server:8081 -t 25 && ./run.sh
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: JAVA_OPTS
+          value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        image: thetyne/codex-security
+        imagePullPolicy: ""
+        name: security-server
+        ports:
+        - containerPort: 8890
+        - containerPort: 6667
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

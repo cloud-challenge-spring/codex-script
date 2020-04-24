@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: codex-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: config.codex.com
+    http:
+      paths:
+      - backend:
+          serviceName: config-server
+          servicePort: 8081
+  - host: eureka.codex.com
+    http:
+      paths:
+      - backend:
+          serviceName: eureka-server
+          servicePort: 8080
+
+  - host: catalog.codex.com
+    http:
+      paths:
+      - backend:
+          serviceName: catalog-server
+          servicePort: 8082
+      

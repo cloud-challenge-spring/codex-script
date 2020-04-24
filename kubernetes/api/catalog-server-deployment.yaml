@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-api.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: catalog-server
+  name: catalog-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: catalog-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-api.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: catalog-server
+    spec:
+      containers:
+      - args:
+        - java
+        - -jar
+        - catalog/build/libs/codex-catalog-.jar
+        command:
+        - sh
+        - -c
+        - ./wait-for-it.sh config-server:8081 -t 25 && ./run.sh
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: JAVA_OPTS
+          value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6666
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        image: thetyne/codex-catalog
+        imagePullPolicy: ""
+        name: catalog-server
+        ports:
+        - containerPort: 8889
+        - containerPort: 6666
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

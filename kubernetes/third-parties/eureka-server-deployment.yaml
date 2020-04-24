@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-third-parties.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: eureka-server
+  name: eureka-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: eureka-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-third-parties.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: eureka-server
+    spec:
+      containers:
+      - args:
+        - java
+        - -jar
+        - codex/build/libs/codex-eureka-0.1.0.jar
+        command:
+        - sh
+        - -c
+        - ./wait-for-it.sh config-server:8081 -t 25 && ./run.sh
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        image: thetyne/codex-eureka
+        imagePullPolicy: ""
+        name: eureka-server
+        ports:
+        - containerPort: 8887
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
