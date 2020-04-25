@@ -38,7 +38,7 @@ spec:
         - name: JAVA_OPTS
           value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6666
         - name: SPRING_PROFILES_ACTIVE
-          value: dev
+          value: kubernetes
         image: thetyne/codex-catalog
         imagePullPolicy: ""
         name: catalog-server
