@@ -32,3 +32,16 @@ services:
       - "8079:8886"
     entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
     command: java -jar build/libs/codex-admin-0.1.0.jar
+
+  gateway-server:
+    build:
+      context: ../../codex-gateway
+      dockerfile: Dockerfile
+      args:
+        - APP_VERSION=0.1.0
+    image: gateway-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    entrypoint: ["sh", "-c", "./wait-for-it.sh localhost:8081 -t 25 && ./run.sh"]
+    command: java -jar build/libs/codex-gateway-0.1.0.jar
+    network_mode: host
