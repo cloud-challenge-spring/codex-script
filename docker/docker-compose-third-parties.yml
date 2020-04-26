@@ -4,20 +4,12 @@ version: "3.7"
 services:
 
   config-server:
-    build:
-      context: ../../codex-config
-      dockerfile: Dockerfile
-      args:
-        - APP_VERSION=0.1.0
     image: config
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     ports:
       - "8081:8888"
-    volumes:
-      - ${HOME}/codex/codex-config:/home/spring/codex-config
     command: java -jar build/libs/codex-config-0.1.0.jar
-
   eureka-server:
     build:
       context: ../../codex-eureka
@@ -33,11 +25,6 @@ services:
     command: java -jar build/libs/codex-eureka-0.1.0.jar
 
   admin-server:
-    build:
-      context: ../../codex-admin
-      dockerfile: Dockerfile
-      args:
-        - APP_VERSION=0.1.0
     image: admin-server
     environment:
       - SPRING_PROFILES_ACTIVE=dev

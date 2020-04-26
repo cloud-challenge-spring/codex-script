@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null
   labels:
-    io.kompose.service: config-server
-  name: config-server
+    io.kompose.service: admin-server
+  name: admin-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: config-server
+      io.kompose.service: admin-server
   strategy: {}
   template:
     metadata:
@@ -21,21 +21,25 @@ spec:
         kompose.version: 1.21.0 (992df58d8)
       creationTimestamp: null
       labels:
-        io.kompose.service: config-server
+        io.kompose.service: admin-server
     spec:
       containers:
       - args:
         - java
         - -jar
-        - build/libs/codex-config-0.1.0.jar
+        - build/libs/codex-admin-0.1.0.jar
+        command:
+        - sh
+        - -c
+        - ./wait-for-it.sh config-server:8081 -t 25 && ./run.sh
         env:
         - name: SPRING_PROFILES_ACTIVE
-          value: dev
-        image: thetyne/codex-config
+          value: kubernetes
+        image: thetyne/codex-admin
         imagePullPolicy: ""
-        name: config-server
+        name: admin-server
         ports:
-        - containerPort: 8888
+        - containerPort: 8886
         resources: {}
       restartPolicy: Always
       serviceAccountName: ""

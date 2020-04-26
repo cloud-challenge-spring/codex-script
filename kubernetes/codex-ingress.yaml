@@ -6,12 +6,14 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
+
   - host: config.codex.com
     http:
       paths:
       - backend:
           serviceName: config-server
           servicePort: 8081
+
   - host: eureka.codex.com
     http:
       paths:
@@ -25,4 +27,11 @@ spec:
       - backend:
           serviceName: catalog-server
           servicePort: 8082
+
+  - host: admin.codex.com
+    http:
+      paths:
+      - backend:
+          serviceName: admin-server
+          servicePort: 8079
       

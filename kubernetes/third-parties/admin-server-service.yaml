@@ -6,14 +6,14 @@ metadata:
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null
   labels:
-    io.kompose.service: config-server
-  name: config-server
+    io.kompose.service: admin-server
+  name: admin-server
 spec:
   ports:
-  - name: "8081"
-    port: 8081
-    targetPort: 8888
+  - name: "8079"
+    port: 8079
+    targetPort: 8886
   selector:
-    io.kompose.service: config-server
+    io.kompose.service: admin-server
 status:
   loadBalancer: {}
